@@ -82,10 +82,8 @@ def KeyRight(self):
 #To Guest team: write your coding in the part below.
 
 
-
-
-
-
+# TODO: Add a maze scorer, structurelize the maze with nodes, then find the most rational path, than give the score.
+# TODO: Universal path finder.
 
 
 

@@ -159,8 +159,8 @@ def CountBricks():
 #!!!Include the above code and use them in mazer.py. Do not modify it, unless instructed to do so.!!!
 
 
-
-
+# TODO: GUI support
+# TODO: Find image for the robot.
 
 
 
