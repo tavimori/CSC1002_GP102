@@ -1,6 +1,7 @@
 # TODO: generate mazes by algorithm.
 # TODO: real time evaluation.
-
+import time
+time.clock()
 import pickle
 import math
 import copy
@@ -14,8 +15,10 @@ STATUS_BLANK = 0
 STATUS_BRICK = 1
 STATUS_START = 2
 STATUS_GOAL = 3
-MRP = -1
+MRP = math.inf
+MRPH = 0
 ADDED_BRICK = (-1, -1)
+print('pickle done', time.clock())
 for i, row in enumerate(raw_maze):
     for j, status in enumerate(row):
         if status == STATUS_START:
@@ -31,7 +34,8 @@ for i, row in enumerate(raw_maze):
             blank_position.append((i, j))
         elif status == STATUS_BRICK:
             maze[i][j] = math.inf
-print('The start point is {}, the goal is {}.'.format(start.__repr__(), goal.__repr__()))
+# print('The start point is {}, the goal is {}.'.format(start.__repr__(), goal.__repr__()))
+print('scan done', time.clock())
 
 
 def print_maze(abc, b=True):
@@ -62,43 +66,44 @@ def min_step(i, j):
         min_step(i, j-1)
 
 
+def refresh_step():
+    for i, row in enumerate(maze):
+        for j, status in enumerate(row):
+            if status != math.inf:
+                maze[i][j] = UPPER_BOUND
+
 init_maze = copy.deepcopy(maze)
 init_maze[start[0]][start[1]] = UPPER_BOUND
 # all upper copy
 min_step(*start)
-print_maze(maze, b=False)
-print_maze(maze)
+# print_maze(maze, b=False)
+# print_maze(maze)
 first_half_maze = copy.deepcopy(maze)
 # first layer try
 fhm = first_half_maze
-for possible_added_brick in blank_position:
-    # maze = copy.deepcopy(init_maze)
-    # maze[possible_added_brick[0]][possible_added_brick[1]] = STATUS_GOAL
-    # maze[goal[0]][goal[1]] = STATUS_BLANK
-    # min_step(*start)
-    step_first_half = first_half_maze[possible_added_brick[0]][possible_added_brick[1]]-1
-    previous_position = list()
-    if fhm[possible_added_brick[0]-1][possible_added_brick[1]] == step_first_half:
-        previous_position.append((possible_added_brick[0]-1, possible_added_brick[1]))
-    if fhm[possible_added_brick[0]][possible_added_brick[1]+1] == step_first_half:
-        previous_position.append((possible_added_brick[0], possible_added_brick[1]+1))
-    if fhm[possible_added_brick[0]+1][possible_added_brick[1]] == step_first_half:
-        previous_position.append((possible_added_brick[0]+1, possible_added_brick[1]))
-    if fhm[possible_added_brick[0]][possible_added_brick[1]-1] == step_first_half:
-        previous_position.append((possible_added_brick[0], possible_added_brick[1]-1))
-    print('Brick at {}, {} previous. half{}'.format(possible_added_brick.__repr__(), len(previous_position), step_first_half))
-    for single_previous_position in previous_position:
-        maze = copy.deepcopy(first_half_maze)
-        maze[single_previous_position[0]][single_previous_position[1]] = -UPPER_BOUND
-        min_step(*single_previous_position)
-        print(maze[goal[0]][goal[1]] + step_first_half + UPPER_BOUND)
-        if MRP < maze[goal[0]][goal[1]] + step_first_half + UPPER_BOUND:
-            MRP = maze[goal[0]][goal[1]] + step_first_half + UPPER_BOUND
-            ADDED_BRICK = possible_added_brick
-
-print('The brick will be added on {}'.format(ADDED_BRICK.__repr__()))
+maze = copy.deepcopy(init_maze)
+print('start search', time.clock())
+for p_previous in blank_position:
+    step_first_half = first_half_maze[p_previous[0]][p_previous[1]]
+    MRPH = 0
+    for p_add_brick in blank_position:
+        if p_add_brick == p_previous:
+            continue
+        # maze = copy.deepcopy(init_maze)
+        maze[p_add_brick[0]][p_add_brick[1]] = math.inf
+        maze[p_previous[0]][p_previous[1]] = step_first_half
+        min_step(*p_previous)
+        if MRPH < maze[goal[0]][goal[1]] < UPPER_BOUND:
+            # print(p_previous.__repr__(), p_add_brick.__repr__())
+            MRPH = maze[goal[0]][goal[1]]
+        maze[p_add_brick[0]][p_add_brick[1]] = UPPER_BOUND
+        refresh_step()
+    if MRP > MRPH:
+        MRP = MRPH
+print('search done', time.clock())
+# print('The brick will be added on {}'.format(ADDED_BRICK.__repr__()))
 print('The MRP is {}'.format(str(MRP)))
-print('\n'.join(['\t'.join([j.__repr__() for j in i]) for i in init_maze]))
-print('\n')
-print('The closest way from start to goal need {} steps'.format(maze[goal[0]][goal[1]]))
+# print('\n'.join(['\t'.join([j.__repr__() for j in i]) for i in init_maze]))
+# print('\n')
+# print('The closest way from start to goal need {} steps'.format(maze[goal[0]][goal[1]]))
 
