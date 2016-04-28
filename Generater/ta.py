@@ -3,7 +3,7 @@ import math
 import copy
 from functools import reduce
 
-
+# TODO: USE recursion to find mrp.
 def check(maze1):
     global MRP1, MRP2, MRP3, MRPPA1, MRPPA2, MRPPA3, MAZE, START, GOAL, PATH
     UPPER_BOUND = 100
@@ -117,16 +117,12 @@ def check(maze1):
 
 def print_maze(list1):
     a = '\n'.join([i.__repr__()[1:-1] for i in list1]).replace('1', '█').replace(' ', '').replace(',', '').replace('0', ' ')
-    # b = a.replace('1', '█')
-    # b = b.replace(' ', '')
-    # c = b.replace(',', '')
-    # c = c.replace('0', ' ')
     print(a)
     return a
 
 
 def read_maze(str1):
-    str1.replace('█', '1 ').replace(' ', '0 ').replace(' \n', '\n')
+    return str1.replace(' ', '0 ').replace('█', '1 ').replace(' \n', '\n')
 
 
 def main():
@@ -137,6 +133,7 @@ def main():
     file = open('output.txt', 'r')
     data = file.read()
     file.close()
+    global mazeList
     mazeList = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                 [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
                 [1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1],
@@ -189,9 +186,8 @@ def main():
         return list(map(lambda x: int(x), v))
     c = list(map(f, a))
     for mmm in c:
-        a = check(mmm)
-        # print(a)
-    a =10086
+        check(mmm)
+
     print('Done')
 
 
