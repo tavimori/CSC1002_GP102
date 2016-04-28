@@ -1,7 +1,6 @@
 # TODO: generate mazes by algorithm.
 # TODO: real time evaluation.
 import time
-time.clock()
 import pickle
 import math
 import copy

@@ -133,7 +133,6 @@ def main():
     file = open('output.txt', 'r')
     data = file.read()
     file.close()
-    global mazeList
     mazeList = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                 [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
                 [1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1],
@@ -187,7 +186,6 @@ def main():
     c = list(map(f, a))
     for mmm in c:
         check(mmm)
-
     print('Done')
 
 

@@ -162,21 +162,28 @@ def CountBricks():
 # TODO: GUI support
 # TODO: Find image for the robot.
 
+def ReDraw():
+    try:
+        tempwindow.configure(font=('Courier New',), text='\n'.join([i.__repr__()[1:-1] for i in tempMaze]).replace('1', '█').replace(' ', '').replace(',', '').replace('0', ' '))
+    except NameError:
+        tempwindow.configure(font=('Courier New',), text='\n'.join([i.__repr__()[1:-1] for i in maze]).replace('1', '█').replace(' ', '').replace(',', '').replace('0', ' '))
+
+def main():
+    global currentPosition, root, labelCurrentPositionExplorer, tempwindow, tempMaze
+
+    maze[5][10] = 0
+    tempMaze = maze
+    root = Tk()
+    labelCurrentPositionExplorer = Label(root)
+    labelCurrentPositionExplorer.pack()
+    tempwindow = Label(root)
+    tempwindow.pack()
+    currentPosition = START
+    ReDraw()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == '__main__':
+    main()
 
 #!!!Include the code below and use it in mazer.py.
 
