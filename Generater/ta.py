@@ -30,7 +30,6 @@ def check(maze1):
     MRPPA3 = list()
     MAZE = list()
     single_path = list()
-
     MAZE = reduce(lambda x, y: x + y, maze1)
     # MAZE[70] = STATUS_BLANK
     # TODO Delete it
@@ -146,6 +145,7 @@ def main():
                 [1, 0, 0, 0, 0, 1, 3, 0, 0, 0, 0, 1],
                 [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
 
+
     mazeList1 = [[1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
                 [1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 1],
                 [1, 0, 0, 1, 1, 1, 0, 0, 0, 1, 0, 1],
@@ -171,6 +171,9 @@ def main():
                  [1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1],
                  [1, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 1],
                  [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]]
+    file = open('a.pkl', 'wb')
+    pickle.dump(mazeList2, file)
+    file.close()
     check(mazeList)
     check(mazeList1)
     check(mazeList2)

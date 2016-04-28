@@ -139,7 +139,7 @@ def alpha_explorer(maze1):
     apex25_single_path = list()
 
     apex25_MAZE = reduce(lambda x, y: x + y, maze1)
-    apex25_MAZE[70] = apex25_STATUS_BLANK
+    # apex25_MAZE[70] = apex25_STATUS_BLANK
     # TODO Delete it
     for i, status in enumerate(apex25_MAZE):
         if status == apex25_STATUS_START:

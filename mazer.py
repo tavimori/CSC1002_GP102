@@ -38,7 +38,7 @@ global START, GOAL  #The START and GOAL positions. They can be located in any tw
 def LoadMazeFile():
     'Load from the initial secret maze file, and extract START and GOAL.'
     global maze, START, GOAL
-    file=open('mazeFileForTest.pkl','rb')#For Host team: You can change to your .pkl file name.
+    file=open('62.pkl','rb')#For Host team: You can change to your .pkl file name.
     maze=pickle.load(file)
     file.close()
     for i in range(len(maze)):
@@ -170,8 +170,8 @@ def ReDraw():
 
 def main():
     global currentPosition, root, labelCurrentPositionExplorer, tempwindow, tempMaze
-
-    maze[5][10] = 0
+    WriteMazeFile()
+    # maze[5][10] = 0
     tempMaze = maze
     root = Tk()
     labelCurrentPositionExplorer = Label(root)
