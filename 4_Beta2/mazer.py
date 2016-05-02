@@ -158,9 +158,6 @@ def CountBricks():
 #!!!Include the above code and use them in mazer.py. Do not modify it, unless instructed to do so.!!!
 
 
-# TODO: GUI support
-# TODO: Find image for the robot.
-
 def ReDraw():
     image_car = PhotoImage(file="genius.gif")
     label_count_brick.configure(text='Brick #: \n%s' % str(CountBricks()))

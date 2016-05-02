@@ -249,6 +249,8 @@ def main():
 def explorer():
     log('[MODULE] The module is imported from mazer.')
     global apex24_raw_maze, apex24_is_added
+    global apex25_done
+    apex25_done = False
     apex24_raw_maze = list()
     apex24_is_added = False
     log('[MODULE] The var for raw maze initialized.')
@@ -258,13 +260,3 @@ if __name__ == '__main__':
     main()
 elif __name__ == 'explorer':
     explorer()
-    global apex25_done
-    apex25_done = False
-
-
-
-
-
-
-
-
