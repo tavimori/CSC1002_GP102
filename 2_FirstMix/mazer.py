@@ -1,8 +1,7 @@
-from tkinter import *
 import pickle
+from tkinter import *
+
 import explorer #Import explorer as a module and call its functions later.
-
-
 
 # Use these global variables to enable the pre-provided functions.
 
@@ -20,7 +19,7 @@ global maze #maze contains the maze information loaded from your original secret
             #1: brick
             #2: START or the current position
             #3: GOAL
-global tempMaze #tempMaze contains the maze information with explored blocks. It will not be
+global tempMaze #tempMaze contains the maze information with explored blocks. It will not be 
                 #written to mazeFile.pkl for read by explorer.py. Its difference with maze is
                 #only in the new value below:
                 #4: the block is previously empty and has been explored.
@@ -46,13 +45,13 @@ def LoadMazeFile():
             START=(i, maze[i].index(2))
         if 3 in maze[i]:
             GOAL=(i, maze[i].index(3))
-
+     
 
 #(1) File write: only in initialization
 #The functions below write the explorerPath.pkl for communication initialization with explorer.py.
 #Just include it in the coding. You do not need to call it.
 
-def InitializeExplorerPath():
+def InitializeExplorerPath():    
     'Initialize explorerPath.pkl for explorer.py.   mazer.py write explorerPath.pkl only this time.'
     file=open('explorerPath.pkl','wb') #Overwrite the previous path information.
     pickle.dump([START], file)
@@ -95,14 +94,14 @@ def WriteMazeFile():
 #(4) File read: every 0.1s approximately
 #The functions below are pre-provided for read from explorerPath.pkl around every 0.1 second and update
 #the global variable tempMaze and the GUI.
-# -- ReadCurrentPosition(): read from explorerPath.pkl, and assign current position to the global variable
+# -- ReadCurrentPosition(): read from explorerPath.pkl, and assign current position to the global variable 
 #    currentPosition. It is called in CommunicationMazerExplorer().
-# -- CommunicationMazerExplorer(): read from explorerPath.pkl around every 0.1 second, and if there is move
+# -- CommunicationMazerExplorer(): read from explorerPath.pkl around every 0.1 second, and if there is move 
 #    to a new position, update the the global variable tempMaze and show it in the GUI.
 # -- UpdateTempMaze(previousPosition, currentPosition): update the global variable tempMaze and show it in
 #    the GUI. !!! There is still need to write a function ReDraw to update the GUI.
 
-
+      
 def CommunicationMazerExplorer():# Use this function before the root.mainloop()
     ''' This function checks the new current position from Explorer, updates the labelCurrentPositionExplorer in GUI,
 stores the new current position in path, and updates the global variable tempMaze (ReDraw the GUI in function UpdateMaze()).
@@ -110,7 +109,7 @@ CommunicationMazerExplorer() will be called around every 100 mini seconds.
 '''
     global currentPosition, path
     previousPosition=currentPosition
-    ReadCurrentPosition()#The global currentPosition will be changed by the position information in explorerPath.pkl
+    ReadCurrentPosition()#The global currentPosition will be changed by the position information in explorerPath.pkl    
 
     labelCurrentPositionExplorer.configure(text='In Explorer: \ncurrentPosition=(%s,%s)'%(currentPosition[0],currentPosition[1]),
                                            justify=CENTER)
@@ -119,20 +118,20 @@ CommunicationMazerExplorer() will be called around every 100 mini seconds.
     if currentPosition!=previousPosition:
         UpdateGUI(previousPosition,currentPosition)
         #This function only updates tempMaze, rather than maze, which is changed only when you add a brick.
-
+        
     root.after(100, CommunicationMazerExplorer)#CommunicationMazerExplorer() will be called every 100 ms.
 
 def ReadCurrentPosition():
     '''Read the current position stored in currentPosition.pkl and assign to the global variable currentPosition.
 After InitializeCommunicationFile(), only explorer.py can write currentPosition.pkl, and thus it is the latest current
-position information after keyboard input.
+position information after keyboard input. 
 '''
     global currentPosition, path
     file=open('explorerPath.pkl','rb')
-    path=pickle.load(file)
+    path=pickle.load(file) 
     currentPosition=path[len(path)-1]
     file.close()
-
+    
 def UpdateGUI(previousPosition, currentPosition):
     '''Update the global varialble tempMaze, and then update GUI by ReDraw().
 This function is called in CommunicationMazerExplorer().
@@ -145,7 +144,7 @@ You may not need to call it in your coding.'''
 
 
 #The function below counts the number of bricks in the maze. Call it when needed.
-
+    
 def CountBricks():
     'It counts the brick number in the global variable maze, and return it.'
     brickNumber=0
@@ -163,22 +162,67 @@ def CountBricks():
 # TODO: Find image for the robot.
 
 def ReDraw():
-    try:
-        tempwindow.configure(font=('Courier New',), text='\n'.join([i.__repr__()[1:-1] for i in tempMaze]).replace('1', '█').replace(' ', '').replace(',', '').replace('0', ' '))
-    except NameError:
-        tempwindow.configure(font=('Courier New',), text='\n'.join([i.__repr__()[1:-1] for i in maze]).replace('1', '█').replace(' ', '').replace(',', '').replace('0', ' '))
+    image_car = PhotoImage(file="robot.gif")
+    label_count_brick.configure(text='Brick #: \n%s' % str(CountBricks()))
+    for i in range(12):
+        for j in range(12):
+            maze_label[i][j].configure(image='')
+            if tempMaze[i][j] == 0:
+                maze_label[i][j].configure(bg="white", fg="black")
+            elif tempMaze[i][j] == 1:
+                maze_label[i][j].configure(bg="black", fg="white")
+            elif tempMaze[i][j] == 2:
+                # image_car = PhotoImage(file='robot.gif')
+                maze_label[i][j].configure(bg='yellow', image=image_car)
+                maze_label[i][j].photo = image_car
+                maze_label[i][j].configure(text='START')
+            elif tempMaze[i][j] == 3:
+                maze_label[i][j].configure(bg='blue')
+            elif tempMaze[i][j] == 4:
+                maze_label[i][j].configure(bg="LightPink", fg="white", text='PATH')
+
+    global path, label_mazer
+    for i, j in enumerate(path[:-1]):
+        maze_label[j[0]][j[1]].configure(text=str(i))
+    label_mazer.configure(text='In Mazer: \ncurrentPosition=%s' % currentPosition.__repr__())
+
 
 def main():
-    global currentPosition, root, labelCurrentPositionExplorer, tempwindow, tempMaze
+    import copy
+    global currentPosition, root, labelCurrentPositionExplorer, tempwindow, tempMaze, maze_label, label_mazer
+    global label_count_brick
+    ReadCurrentPosition()
     WriteMazeFile()
-    # maze[5][10] = 0
     tempMaze = maze
-    root = Tk()
-    labelCurrentPositionExplorer = Label(root)
-    labelCurrentPositionExplorer.pack()
-    tempwindow = Label(root)
-    tempwindow.pack()
     currentPosition = START
+    root = Tk()
+    root.geometry('600x650')
+    root.resizable(False, False)
+    root.title('Maze')
+
+    label_mazer = Label(root, text='In Mazer: \ncurrentPosition=%s' % currentPosition.__repr__())
+    label_mazer.place(x=0, y=0, width=200, height=50)
+    label_count_brick = Label(root, text='Brick #: \n  ')
+    label_count_brick.place(x=200, y=0, width=200, height=50)
+    labelCurrentPositionExplorer = Label(root, text='In Explorer: \ncurrentPosition=%s' % currentPosition.__repr__())
+    labelCurrentPositionExplorer.place(x=400, y=0, width=200, height=50)
+    maze_label = copy.deepcopy(maze)
+    for i in range(12):
+        for j in range(12):
+            maze_label[i][j] = Label(root)
+            maze_label[i][j].place(x=j*50, y=(i+1)*50, width=50, height=50)
+
+            def brick_click(e, i=i, j=j):
+                global maze, tempMaze
+                print(str(i))
+                if maze[i][j] == 0:
+                    maze[i][j] = 1
+                    tempMaze[i][j] = 1
+                    WriteMazeFile()
+                    ReDraw()
+            # maze_label_event[i][j] = copy.deepcopy(f)
+            maze_label[i][j].bind('<Button-1>', brick_click)
+
     ReDraw()
 
 
@@ -186,7 +230,7 @@ if __name__ == '__main__':
     main()
 
 #!!!Include the code below and use it in mazer.py.
-
+        
 root.bind("<KeyRelease-Up>", explorer.KeyUp)#To Host Team: We change the KeyPress event to KeyRelease event,
                                             #to prevent from continuous KeyPress. When the key is released from
                                             #the pressed state, the event will be activated.

@@ -37,7 +37,7 @@ global START, GOAL  #The START and GOAL positions. They can be located in any tw
 def LoadMazeFile():
     'Load from the initial secret maze file, and extract START and GOAL.'
     global maze, START, GOAL
-    file=open('mazeFileForTest.pkl','rb')#For Host team: You can change to your .pkl file name.
+    file=open('58.pkl','rb')#For Host team: You can change to your .pkl file name.
     maze=pickle.load(file)
     file.close()
     for i in range(len(maze)):
@@ -158,24 +158,40 @@ def CountBricks():
 #!!!Include the above code and use them in mazer.py. Do not modify it, unless instructed to do so.!!!
 
 
+# TODO: GUI support
+# TODO: Find image for the robot.
+
+def ReDraw():
+    try:
+        tempwindow.configure(font=('Courier New',), text='\n'.join([i.__repr__()[1:-1] for i in tempMaze]).replace('1', '█').replace(' ', '').replace(',', '').replace('0', ' '))
+    except NameError:
+        tempwindow.configure(font=('Courier New',), text='\n'.join([i.__repr__()[1:-1] for i in maze]).replace('1', '█').replace(' ', '').replace(',', '').replace('0', ' '))
+
+def addfunc():
+    global maze
+    maze[1][4] = 1
+    tempMaze[1][4] = 1
+    WriteMazeFile()
 
 
+def main():
+    global currentPosition, root, labelCurrentPositionExplorer, tempwindow, tempMaze
+    WriteMazeFile()
+    # maze[5][10] = 0
+    tempMaze = maze
+    root = Tk()
+    labelCurrentPositionExplorer = Label(root)
+    labelCurrentPositionExplorer.pack()
+    tempwindow = Label(root)
+    tempwindow.pack()
+    button1 = Button(root, text='Add at some point', command=addfunc)
+    button1.pack()
+    currentPosition = START
+    ReDraw()
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+if __name__ == '__main__':
+    main()
 
 #!!!Include the code below and use it in mazer.py.
 

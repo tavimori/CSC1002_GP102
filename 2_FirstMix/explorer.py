@@ -82,38 +82,50 @@ def KeyRight(self):
 #To Guest team: write your coding in the part below.
 
 
-# TODO: Add a maze scorer, structurelize the maze with nodes, then find the most rational path, than give the score.
-# TODO: Universal path finder.
 def key_event(key):
     log('[{}] - Key event detected.'.format(key))
     LoadMaze()
     ReadCurrentPosition()
-    global currentPosition
-    # currentPosition = (currentPosition[0], currentPosition[1]+1)
+    global apex24_raw_maze, apex24_is_added
     global apex25_done, apex25_p
-    if not apex25_done:
-        log('No known path found.')
-        log('Alpha explorer start...')
-        apex25_p = alpha_explorer(maze)
-        log(apex25_p.__repr__())
-        log('Alpha explorer done.')
+    # Path forming
+    if currentPosition == GOAL:
+        log('Success')
     else:
-        log('Follow Alpha explorer path.')
-    currentPosition = apex25_p[1]
-    apex25_p.pop(1)
-    WriteExplorerPath()
+        if maze != apex24_raw_maze:
+            log('[MAZE] New maze file detected.')
+            if len(apex24_raw_maze) == 0:
+                apex24_raw_maze = maze
+                log('[MAZE] Maze has been stored in explorer.')
+            else:
+                apex24_is_added = True
+                apex25_done = False
+                apex24_raw_maze = maze
+                log('[MAZE] Maze change find. Updated.')
+        global currentPosition
+        if not apex25_done:
+            log('[AE] No known path found.')
+            log('[AE] Alpha explorer start...')
+            apex25_p = alpha_explorer(maze, brick_added=apex24_is_added)
+            log('[AE] Result is' + apex25_p.__repr__())
+            log('[AE] Alpha explorer done.')
+        else:
+            log('[AE] Follow Alpha explorer path.')
+        currentPosition = apex25_p[1]
+        apex25_p.pop(1)
+        WriteExplorerPath()
+
 
 def log(text):
     print('In Explorer: {}'.format(text))
 
 
-def alpha_explorer(maze1):
+def alpha_explorer(maze1, brick_added=False):
     import pickle
     import math
     import copy
     from functools import reduce
 
-    # global MRP1, MRP2, MRP3, MRPPA1, MRPPA2, MRPPA3, MAZE, START, GOAL, PATH
     apex25_STATUS_BLANK = 0
     apex25_STATUS_BRICK = 1
     apex25_STATUS_START = 2
@@ -137,18 +149,13 @@ def alpha_explorer(maze1):
     apex25_MRPPA3 = list()
     apex25_MAZE = list()
     apex25_single_path = list()
-
     apex25_MAZE = reduce(lambda x, y: x + y, maze1)
-    # apex25_MAZE[70] = apex25_STATUS_BLANK
-    # TODO Delete it
+
     for i, status in enumerate(apex25_MAZE):
         if status == apex25_STATUS_START:
             apex25_START = i
-            # print('Start point is ({}).'.format(START.__repr__()))
-            # MAZE[i] = 0
         elif status == apex25_STATUS_GOAL:
             apex25_GOAL = i
-            # print('End point is ({}).'.format(GOAL.__repr__()))
         elif status == apex25_STATUS_BLANK:
             apex25_BLANK_POSITION.append(i)
         elif status == apex25_STATUS_BRICK:
@@ -157,6 +164,10 @@ def alpha_explorer(maze1):
     def get_coordinate(index):
         nonlocal apex25_WIDTH
         return divmod(index, apex25_WIDTH)
+
+    def get_index(coordinate):
+        nonlocal apex25_WIDTH
+        return coordinate[0] * apex25_WIDTH + coordinate[1]
 
     def find_path(i=apex25_START, not_in=-1, clear=False):
         nonlocal apex25_PATH, apex25_single_path
@@ -181,43 +192,54 @@ def alpha_explorer(maze1):
             if apex25_MAZE[i + apex25_RIGHT] != apex25_STATUS_BRICK and ((i + apex25_RIGHT) not in apex25_single_path):
                 find_path(i=i + apex25_RIGHT, not_in=not_in)
                 apex25_single_path.pop()
-    find_path(clear=True)
-    raw_path = copy.deepcopy(apex25_PATH)
-    apex25_MRP3 = math.inf
-    for i in raw_path:
-        # find the lowest 2 to 3
-        j_max = len(i)-1
-        apex25_MRP2 = 0
-        for j, k in enumerate(i):
-            # find the highest 1 to 2
-            if j == 0:
-                # Put the Brick just next to the start
-                continue
-            if j == j_max:
-                # Put the Brick at which will cause an index error
-                continue
-            find_path(i=k, not_in=i[j+1], clear=True)
-            # The shortest path under the additional brick placed at i[j+1]
-            apex25_MRP1 = math.inf
-            apex25_MRPPA1 = list()
-            if len(apex25_PATH) != 0:
-                for l in apex25_PATH:
-                    # find the lowest p to 1
-                    if len(l) < apex25_MRP1:
-                        apex25_MRP1 = len(l)
-                        apex25_MRPPA1 = l
-            if apex25_MRP2 < j + apex25_MRP1 and (apex25_MRP1 < math.inf):
-                apex25_MRP2 = j + apex25_MRP1
-                # print('Brick at', str(j), 'remain steps', str(MRP1))
-                apex25_MRPPA2 = i[:j] + copy.deepcopy(apex25_MRPPA1)
-        if apex25_MRP3 > apex25_MRP2 and (apex25_MRP2 != 0):
-            apex25_MRP3 = apex25_MRP2
-            apex25_MRPPA3 = copy.deepcopy(apex25_MRPPA2)
-        apex25_MRP3 -= 1
-        # apex25_MRPPA3 = apex25_MRPPA3[1:]
-    # Remove the first place
-    print('MRP{}\tESC{}\tSTA{}\t'.format(str(apex25_MRP3), str(apex25_MRP3-len(apex25_BRICK_POSITION)+44),
-                                         str(apex25_MRP3-len(apex25_BRICK_POSITION)-1+85)))
+
+    if not brick_added:
+        find_path(clear=True)
+        raw_path = copy.deepcopy(apex25_PATH)
+        apex25_MRP3 = math.inf
+        for i in raw_path:
+            # find the lowest 2 to 3
+            j_max = len(i)-1
+            apex25_MRP2 = 0
+            for j, k in enumerate(i):
+                # find the highest 1 to 2
+                if j == 0:
+                    # Put the Brick just next to the start
+                    continue
+                if j == j_max:
+                    # Put the Brick at which will cause an index error
+                    continue
+                find_path(i=k, not_in=i[j+1], clear=True)
+                # The shortest path under the additional brick placed at i[j+1]
+                apex25_MRP1 = math.inf
+                apex25_MRPPA1 = list()
+                if len(apex25_PATH) != 0:
+                    for l in apex25_PATH:
+                        # find the lowest p to 1
+                        if len(l) < apex25_MRP1:
+                            apex25_MRP1 = len(l)
+                            apex25_MRPPA1 = l
+                if apex25_MRP2 < j + apex25_MRP1 and (apex25_MRP1 < math.inf):
+                    apex25_MRP2 = j + apex25_MRP1
+                    # print('Brick at', str(j), 'remain steps', str(MRP1))
+                    apex25_MRPPA2 = i[:j] + copy.deepcopy(apex25_MRPPA1)
+            if apex25_MRP3 > apex25_MRP2 and (apex25_MRP2 != 0):
+                apex25_MRP3 = apex25_MRP2
+                apex25_MRPPA3 = copy.deepcopy(apex25_MRPPA2)
+            apex25_MRP3 -= 1
+            # apex25_MRPPA3 = apex25_MRPPA3[1:]
+        # Remove the first place
+        log('[AE] Result: MRP{}\tESC{}\tSTA{}\t'.format(str(apex25_MRP3), str(apex25_MRP3-len(apex25_BRICK_POSITION)+44),
+                                             str(apex25_MRP3-len(apex25_BRICK_POSITION)-1+85)))
+    elif brick_added:
+        global currentPosition
+        find_path(i=get_index(currentPosition), clear=True)
+        apex25_MRPPA3 = apex25_PATH[0]
+        for i in apex25_PATH:
+            if len(apex25_MRPPA3) > len(i):
+                apex25_MRPPA3 = i
+        log('[AE] PATH: {}'.format(apex25_MRPPA3.__repr__()))
+
     global apex25_done
     apex25_done = True
     return list(map(lambda x: get_coordinate(x), apex25_MRPPA3))
@@ -228,7 +250,11 @@ def main():
 
 
 def explorer():
-    log('The module is called from mazer.')
+    log('[MODULE] The module is imported from mazer.')
+    global apex24_raw_maze, apex24_is_added
+    apex24_raw_maze = list()
+    apex24_is_added = False
+    log('[MODULE] The var for raw maze initialized.')
 
 
 if __name__ == '__main__':
