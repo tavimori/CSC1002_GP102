@@ -90,7 +90,7 @@ def key_event(key):
     global apex25_done, apex25_p
     # Path forming
     if currentPosition == GOAL:
-        log('Success')
+        log('[System] Success')
     else:
         if maze != apex24_raw_maze:
             log('[MAZE] New maze file detected.')
@@ -196,11 +196,11 @@ def alpha_explorer(maze1, brick_added=False):
     if not brick_added:
         find_path(clear=True)
         raw_path = copy.deepcopy(apex25_PATH)
-        apex25_MRP3 = math.inf
+        apex25_MRP3 = math.inf  # The length of the most rational path.
         for i in raw_path:
             # find the lowest 2 to 3
             j_max = len(i)-1
-            apex25_MRP2 = 0
+            apex25_MRP2 = 0  # The length of the most rational path by going along a certain path.
             for j, k in enumerate(i):
                 # find the highest 1 to 2
                 if j == 0:
@@ -210,8 +210,7 @@ def alpha_explorer(maze1, brick_added=False):
                     # Put the Brick at which will cause an index error
                     continue
                 find_path(i=k, not_in=i[j+1], clear=True)
-                # The shortest path under the additional brick placed at i[j+1]
-                apex25_MRP1 = math.inf
+                apex25_MRP1 = math.inf  # The shortest path under the additional brick placed at i[j+1]
                 apex25_MRPPA1 = list()
                 if len(apex25_PATH) != 0:
                     for l in apex25_PATH:
@@ -226,9 +225,7 @@ def alpha_explorer(maze1, brick_added=False):
             if apex25_MRP3 > apex25_MRP2 and (apex25_MRP2 != 0):
                 apex25_MRP3 = apex25_MRP2
                 apex25_MRPPA3 = copy.deepcopy(apex25_MRPPA2)
-            apex25_MRP3 -= 1
-            # apex25_MRPPA3 = apex25_MRPPA3[1:]
-        # Remove the first place
+        apex25_MRP3 -= 1  # Remove the first place
         log('[AE] Result: MRP{}\tESC{}\tSTA{}\t'.format(str(apex25_MRP3), str(apex25_MRP3-len(apex25_BRICK_POSITION)+44),
                                              str(apex25_MRP3-len(apex25_BRICK_POSITION)-1+85)))
     elif brick_added:

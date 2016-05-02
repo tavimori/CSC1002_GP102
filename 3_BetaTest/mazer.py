@@ -183,6 +183,7 @@ def ReDraw():
 
     global path, label_mazer
     for i, j in enumerate(path[:-1]):
+        maze_label[j[0]][j[1]].configure(bg="LightPink", fg="white", text='PATH')
         maze_label[j[0]][j[1]].configure(text=str(i))
     label_mazer.configure(text='In Mazer: \ncurrentPosition=%s' % currentPosition.__repr__())
 
@@ -214,13 +215,11 @@ def main():
 
             def brick_click(e, i=i, j=j):
                 global maze, tempMaze
-                print(str(i))
                 if maze[i][j] == 0:
                     maze[i][j] = 1
                     tempMaze[i][j] = 1
                     WriteMazeFile()
                     ReDraw()
-            # maze_label_event[i][j] = copy.deepcopy(f)
             maze_label[i][j].bind('<Button-1>', brick_click)
 
     ReDraw()
