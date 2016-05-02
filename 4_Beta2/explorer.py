@@ -107,7 +107,7 @@ def key_event(key):
             log('[AE] No known path found.')
             log('[AE] Alpha explorer start...')
             apex25_p = alpha_explorer(maze, brick_added=apex24_is_added)
-            log('[AE] Result is' + apex25_p.__repr__())
+            log('[AE] The most rational path is ' + apex25_p.__repr__())
             log('[AE] Alpha explorer done.')
         else:
             log('[AE] Follow Alpha explorer path.')
@@ -220,14 +220,15 @@ def alpha_explorer(maze1, brick_added=False):
                             apex25_MRPPA1 = l
                 if apex25_MRP2 < j + apex25_MRP1 and (apex25_MRP1 < math.inf):
                     apex25_MRP2 = j + apex25_MRP1
-                    # print('Brick at', str(j), 'remain steps', str(MRP1))
                     apex25_MRPPA2 = i[:j] + copy.deepcopy(apex25_MRPPA1)
             if apex25_MRP3 > apex25_MRP2 and (apex25_MRP2 != 0):
                 apex25_MRP3 = apex25_MRP2
                 apex25_MRPPA3 = copy.deepcopy(apex25_MRPPA2)
         apex25_MRP3 -= 1  # Remove the first place
-        log('[AE] Evaluation is over: MRP[{}]\tESC[{}]\tSTA[{}]\t'.format(str(apex25_MRP3), str(apex25_MRP3-len(apex25_BRICK_POSITION)+44),
-                                             str(apex25_MRP3-len(apex25_BRICK_POSITION)-1+85)))
+        log('[AE] Evaluation is over: MRP[{}]\tESC[{}]\tSTA[{}]\t'.format(
+            str(apex25_MRP3),
+            str(apex25_MRP3-len(apex25_BRICK_POSITION)+44),
+            str(apex25_MRP3-len(apex25_BRICK_POSITION)-1+85)))
     elif brick_added:
         global currentPosition
         find_path(i=get_index(currentPosition), clear=True)
