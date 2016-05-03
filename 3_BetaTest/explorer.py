@@ -60,206 +60,49 @@ def WriteExplorerPath():
 #To Guest team: complete these functions. DO NOT change the function names. Otherwise, mazer.py can not call them.
 
 def KeyUp(self):
-    key_event('UP')
+    LoadMaze()
+    ReadCurrentPosition()
+    global currentPosition
+    currentPosition = (currentPosition[0] - 1, currentPosition[1])
+    WriteExplorerPath()
     #To Guest team: complete this function. DO NOT change the function name, so that mazer.py can call it.
 
 
 def KeyDown(self):
-    key_event('DOWN')
+    LoadMaze()
+    ReadCurrentPosition()
+    global currentPosition
+    currentPosition = (currentPosition[0] +1, currentPosition[1])
+    WriteExplorerPath()
     #To Guest team: complete this function. DO NOT change the function name, so that mazer.py can call it.
 
 
 def KeyLeft(self):
-    key_event('LEFT')
+    LoadMaze()
+    ReadCurrentPosition()
+    global currentPosition
+    currentPosition = (currentPosition[0], currentPosition[1] - 1)
+    WriteExplorerPath()
     #To Guest team: complete this function. DO NOT change the function name, so that mazer.py can call it.
 
 
 def KeyRight(self):
-    key_event('RIGHT')
+    LoadMaze()
+    ReadCurrentPosition()
+    global currentPosition
+    currentPosition = (currentPosition[0], currentPosition[1] + 1)
+    WriteExplorerPath()
     #To Guest team: complete this function. DO NOT change the function name, so that mazer.py can call it.
 
 
 #To Guest team: write your coding in the part below.
 
 
-def key_event(key):
-    log('[{}] - Key event detected.'.format(key))
-    LoadMaze()
-    ReadCurrentPosition()
-    global apex24_raw_maze, apex24_is_added
-    global apex25_done, apex25_p
-    # Path forming
-    if currentPosition == GOAL:
-        log('[System] Success')
-    else:
-        if maze != apex24_raw_maze:
-            log('[MAZE] New maze file detected.')
-            if len(apex24_raw_maze) == 0:
-                apex24_raw_maze = maze
-                log('[MAZE] Maze has been stored in explorer.')
-            else:
-                apex24_is_added = True
-                apex25_done = False
-                apex24_raw_maze = maze
-                log('[MAZE] Maze change find. Updated.')
-        global currentPosition
-        if not apex25_done:
-            log('[AE] No known path found.')
-            log('[AE] Alpha explorer start...')
-            apex25_p = alpha_explorer(maze, brick_added=apex24_is_added)
-            log('[AE] Result is' + apex25_p.__repr__())
-            log('[AE] Alpha explorer done.')
-        else:
-            log('[AE] Follow Alpha explorer path.')
-        currentPosition = apex25_p[1]
-        apex25_p.pop(1)
-        WriteExplorerPath()
 
 
-def log(text):
-    print('In Explorer: {}'.format(text))
 
 
-def alpha_explorer(maze1, brick_added=False):
-    import pickle
-    import math
-    import copy
-    from functools import reduce
 
-    apex25_STATUS_BLANK = 0
-    apex25_STATUS_BRICK = 1
-    apex25_STATUS_START = 2
-    apex25_STATUS_GOAL = 3
-    apex25_WIDTH = 12
-    apex25_HEIGHT = 12
-    apex25_UP = -apex25_WIDTH
-    apex25_DOWN = apex25_WIDTH
-    apex25_LEFT = -1
-    apex25_RIGHT = 1
-    apex25_BLANK_POSITION = list()
-    apex25_BRICK_POSITION = list()
-    apex25_START = int()
-    apex25_GOAL = int()
-    apex25_PATH = list()
-    apex25_MRP1 = math.inf
-    apex25_MRP2 = 0
-    apex25_MRP3 = math.inf
-    apex25_MRPPA1 = list()
-    apex25_MRPPA2 = list()
-    apex25_MRPPA3 = list()
-    apex25_MAZE = list()
-    apex25_single_path = list()
-    apex25_MAZE = reduce(lambda x, y: x + y, maze1)
-
-    for i, status in enumerate(apex25_MAZE):
-        if status == apex25_STATUS_START:
-            apex25_START = i
-        elif status == apex25_STATUS_GOAL:
-            apex25_GOAL = i
-        elif status == apex25_STATUS_BLANK:
-            apex25_BLANK_POSITION.append(i)
-        elif status == apex25_STATUS_BRICK:
-            apex25_BRICK_POSITION.append(i)
-
-    def get_coordinate(index):
-        nonlocal apex25_WIDTH
-        return divmod(index, apex25_WIDTH)
-
-    def get_index(coordinate):
-        nonlocal apex25_WIDTH
-        return coordinate[0] * apex25_WIDTH + coordinate[1]
-
-    def find_path(i=apex25_START, not_in=-1, clear=False):
-        nonlocal apex25_PATH, apex25_single_path
-        if clear:
-            apex25_PATH = list()
-            apex25_single_path = list()
-        apex25_single_path.append(i)
-        if i == not_in:
-            pass
-        elif i == apex25_GOAL:
-            apex25_PATH.append(copy.copy(apex25_single_path))
-        else:
-            if apex25_MAZE[i + apex25_UP] != apex25_STATUS_BRICK and ((i + apex25_UP) not in apex25_single_path):
-                find_path(i=i + apex25_UP, not_in=not_in)
-                apex25_single_path.pop()
-            if apex25_MAZE[i + apex25_DOWN] != apex25_STATUS_BRICK and ((i + apex25_DOWN) not in apex25_single_path):
-                find_path(i=i + apex25_DOWN, not_in=not_in)
-                apex25_single_path.pop()
-            if apex25_MAZE[i + apex25_LEFT] != apex25_STATUS_BRICK and ((i + apex25_LEFT) not in apex25_single_path):
-                find_path(i=i + apex25_LEFT, not_in=not_in)
-                apex25_single_path.pop()
-            if apex25_MAZE[i + apex25_RIGHT] != apex25_STATUS_BRICK and ((i + apex25_RIGHT) not in apex25_single_path):
-                find_path(i=i + apex25_RIGHT, not_in=not_in)
-                apex25_single_path.pop()
-
-    if not brick_added:
-        find_path(clear=True)
-        raw_path = copy.deepcopy(apex25_PATH)
-        apex25_MRP3 = math.inf  # The length of the most rational path.
-        for i in raw_path:
-            # find the lowest 2 to 3
-            j_max = len(i)-1
-            apex25_MRP2 = 0  # The length of the most rational path by going along a certain path.
-            for j, k in enumerate(i):
-                # find the highest 1 to 2
-                if j == 0:
-                    # Put the Brick just next to the start
-                    continue
-                if j == j_max:
-                    # Put the Brick at which will cause an index error
-                    continue
-                find_path(i=k, not_in=i[j+1], clear=True)
-                apex25_MRP1 = math.inf  # The shortest path under the additional brick placed at i[j+1]
-                apex25_MRPPA1 = list()
-                if len(apex25_PATH) != 0:
-                    for l in apex25_PATH:
-                        # find the lowest p to 1
-                        if len(l) < apex25_MRP1:
-                            apex25_MRP1 = len(l)
-                            apex25_MRPPA1 = l
-                if apex25_MRP2 < j + apex25_MRP1 and (apex25_MRP1 < math.inf):
-                    apex25_MRP2 = j + apex25_MRP1
-                    # print('Brick at', str(j), 'remain steps', str(MRP1))
-                    apex25_MRPPA2 = i[:j] + copy.deepcopy(apex25_MRPPA1)
-            if apex25_MRP3 > apex25_MRP2 and (apex25_MRP2 != 0):
-                apex25_MRP3 = apex25_MRP2
-                apex25_MRPPA3 = copy.deepcopy(apex25_MRPPA2)
-        apex25_MRP3 -= 1  # Remove the first place
-        log('[AE] Evaluation is over: MRP[{}]\tESC[{}]\tSTA[{}]\t'.format(str(apex25_MRP3), str(apex25_MRP3-len(apex25_BRICK_POSITION)+44),
-                                             str(apex25_MRP3-len(apex25_BRICK_POSITION)-1+85)))
-    elif brick_added:
-        global currentPosition
-        find_path(i=get_index(currentPosition), clear=True)
-        apex25_MRPPA3 = apex25_PATH[0]
-        for i in apex25_PATH:
-            if len(apex25_MRPPA3) > len(i):
-                apex25_MRPPA3 = i
-        log('[AE] PATH: {}'.format(apex25_MRPPA3.__repr__()))
-
-    global apex25_done
-    apex25_done = True
-    return list(map(lambda x: get_coordinate(x), apex25_MRPPA3))
-
-
-def main():
-    log('The module is running independently.')
-
-
-def explorer():
-    log('[MODULE] The module is imported from mazer.')
-    global apex24_raw_maze, apex24_is_added
-    apex24_raw_maze = list()
-    apex24_is_added = False
-    log('[MODULE] The var for raw maze initialized.')
-
-
-if __name__ == '__main__':
-    main()
-elif __name__ == 'explorer':
-    explorer()
-    global apex25_done
-    apex25_done = False
 
 
 
