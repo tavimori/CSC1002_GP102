@@ -90,7 +90,7 @@ def have_a_try(func):
     return wrapper
 
 
-# @have_a_try
+@have_a_try
 def key_event(key):
     log('[{}] - Key event detected.'.format(key))
     LoadMaze()
@@ -99,7 +99,9 @@ def key_event(key):
     global AE_done, AE_p, AE_MRP3_C
     # Path forming
     if currentPosition == GOAL:
-        log('[System] Success')
+        log('[System] Congratulations, you win in {} steps. The most rational path have {} steps.'.format(
+            str(len(path) - 1), str(AE_MRP3_A)
+        ))
     else:
         if maze != apex24_raw_maze:
             log('[MAZE] New maze file detected.')
@@ -158,6 +160,7 @@ def alpha_explorer(maze1, brick_added=False):
     AE_PATH = list()
     AE_MRP1 = math.inf
     AE_MRP2 = 0
+    global AE_MRP3_A
     AE_MRP3 = math.inf
     AE_MRPPA1 = list()
     AE_MRPPA2 = list()
@@ -246,6 +249,7 @@ def alpha_explorer(maze1, brick_added=False):
                 AE_MRP3_C = AE_MRP2_C
                 AE_MRPPA3 = copy.deepcopy(AE_MRPPA2)
         AE_MRP3 -= 1  # Remove the first place
+        AE_MRP3_A = AE_MRP3
         log('[AE] Evaluation is over: MRP[{}]\tESC[{}]\tSTA[{}]\t'.format(
             str(AE_MRP3),
             str(AE_MRP3-len(AE_BRICK_POSITION)+44),
