@@ -221,7 +221,6 @@ def main():
                     maze[i][j] = 1
                     tempMaze[i][j] = 1
                     WriteMazeFile()
-                    log('[EVENT] Mouse click detected. ')
                     ReDraw()
             maze_label[i][j].bind('<Button-1>', brick_click)
     log('[Init] Mouse click event initialized.')
