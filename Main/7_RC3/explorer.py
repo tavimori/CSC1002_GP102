@@ -85,7 +85,7 @@ def have_a_try(func):
     def wrapper(*args, **kwargs):
         try:
             return func(*args, **kwargs)
-        except IndexError:
+        except IndexError or NameError:
             log('[ERROR] There is no path from the start to goal')
     return wrapper
 
