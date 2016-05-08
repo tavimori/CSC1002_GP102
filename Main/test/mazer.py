@@ -39,6 +39,13 @@ def LoadMazeFile():
     global maze, START, GOAL
     file=open('afdefaa18a3656a99043d728d6fc87bb.pkl','rb')#For Host team: You can change to your .pkl file name.
     maze=pickle.load(file)
+    # maze[3][8]=0
+    # maze[3][9]=1
+    # maze[1][7]=0
+    # maze[2][7]=1
+    # maze[2][8]=1
+    # maze[1][6]=0
+    # maze[3][10]=3
     file.close()
     for i in range(len(maze)):
         if 2 in maze[i]:
@@ -196,7 +203,7 @@ def main():
     global label_count_brick
     ReadCurrentPosition()
     WriteMazeFile()
-    tempMaze = copy.deepcopy(maze)
+    tempMaze = maze
     currentPosition = START
     root = Tk()
     root.geometry('600x650')
@@ -214,7 +221,7 @@ def main():
         for j in range(12):
             maze_label[i][j] = Label(root)
             maze_label[i][j].place(x=j*50, y=(i+1)*50, width=50, height=50)
-
+            maze_label[i][j].configure(text=str(i)+str(j))
             def brick_click(e, i=i, j=j):
                 global maze, tempMaze
                 if maze[i][j] == 0:
